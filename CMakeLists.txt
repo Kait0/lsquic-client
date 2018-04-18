@@ -4,7 +4,14 @@ cmake_minimum_required(VERSION 2.8)
 
 project(lsquic)
 
-IF (NOT (CMAKE_C_COMPILER MATCHES "MSVC"))
+IF (CMAKE_C_COMPILER MATCHES "MSVC" OR
+    CMAKE_C_COMPILER MATCHES "Microsoft Visual Studio")
+    SET(USING_MS 1)
+ELSE()
+    SET(USING_MS 0)
+ENDIF()
+
+IF (NOT (USING_MS EQUAL 1))
 # We prefer clang
 IF(NOT ("${CMAKE_C_COMPILER}" MATCHES "ccc-analyzer" OR
         "${CMAKE_C_COMPILER}" MATCHES "gcc"          OR
@@ -29,7 +36,7 @@ ENDIF()
 MESSAGE(STATUS "DEVEL_MODE: ${DEVEL_MODE}")
 
 
-IF (NOT (CMAKE_C_COMPILER MATCHES "MSVC"))
+IF (NOT (USING_MS EQUAL 1))
 
 SET(MY_CMAKE_FLAGS "${MY_CMAKE_FLAGS} -Wall -Wextra -Wno-unused-parameter")
 SET(MY_CMAKE_FLAGS "${MY_CMAKE_FLAGS} -fno-omit-frame-pointer")
@@ -68,7 +75,7 @@ ELSE()
     MESSAGE(STATUS "AddressSanitizer is OFF")
 ENDIF()
 
-#MSVC
+# USING_MS
 ELSE()
 SET(MY_CMAKE_FLAGS "${MY_CMAKE_FLAGS} -W4 -WX -Zi -DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -I${CMAKE_CURRENT_SOURCE_DIR}/wincompat")
 IF(DEVEL_MODE EQUAL 1)
@@ -88,7 +95,7 @@ set (BORINGSSL_BASE_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../boringssl)
 
 SET (VCPKG_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../vcpkg/installed/x64-windows-static)
 
-ENDIF() #MSVC
+ENDIF() # USING_MS
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  ${MY_CMAKE_FLAGS} $ENV{EXTRA_CFLAGS}")
 
@@ -115,7 +122,7 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 ENDIF()
 
 
-IF (NOT (CMAKE_C_COMPILER MATCHES "MSVC"))
+IF (NOT (USING_MS EQUAL 1))
 add_executable(http_client
     test/http_client.c
     test/prog.c
@@ -123,7 +130,7 @@ add_executable(http_client
 )
 target_link_libraries(http_client lsquic event pthread libssl.a libcrypto.a ${FIULIB} z m)
 
-#MSVC
+# USING_MS
 ELSE()
 add_executable(http_client
     test/http_client.c

@@ -5,7 +5,14 @@ include_directories( ../../src/liblsquic )
 
 enable_testing()
 
-IF (NOT (CMAKE_C_COMPILER MATCHES "MSVC"))
+IF (CMAKE_C_COMPILER MATCHES "MSVC" OR
+    CMAKE_C_COMPILER MATCHES "Microsoft Visual Studio")
+    SET(USING_MS 1)
+ELSE()
+    SET(USING_MS 0)
+ENDIF()
+
+IF (NOT (USING_MS EQUAL 1))
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-value")
 
 
@@ -240,7 +247,7 @@ add_executable(test_dec test_dec.c)
 target_link_libraries(test_dec libssl.a libcrypto.a z m pthread ${FIULIB})
 
 
-#MSVC
+# USING_MS
 ELSE()
 
 SET (UGH_LIB_LIST debug  $(SolutionDir)src/liblsquic/debug/lsquic.lib debug  ${VCPKG_BASE_DIR}/debug/lib/event.lib debug  ${VCPKG_BASE_DIR}/debug/lib/zlibd.lib debug  ${BORINGSSL_BASE_LIB_DIR}/ssl/debug/ssl.lib debug  ${BORINGSSL_BASE_LIB_DIR}/crypto/debug/crypto.lib optimized  $(SolutionDir)src/liblsquic/release/lsquic.lib optimized  ${VCPKG_BASE_DIR}/lib/event.lib optimized  ${VCPKG_BASE_DIR}/lib/zlib.lib optimized  ${BORINGSSL_BASE_LIB_DIR}/ssl/Release/ssl.lib optimized  ${BORINGSSL_BASE_LIB_DIR}/crypto/Release/crypto.lib)
