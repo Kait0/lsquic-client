@@ -18,6 +18,7 @@
 #include <event2/event.h>
 
 #include <lsquic.h>
+#include <time.h>
 
 #include "../src/liblsquic/lsquic_hash.h"
 #include "../src/liblsquic/lsquic_logger.h"
@@ -176,6 +177,8 @@ prog_set_opt (struct prog *prog, int opt, const char *arg)
         return set_engine_option(&prog->prog_settings,
                                             &prog->prog_version_cleared, arg);
     case 's':
+		;
+		strcpy(saveArg,arg);
         if (0 == (prog->prog_engine_flags & LSENG_SERVER) &&
                                             !TAILQ_EMPTY(prog->prog_sports))
             return -1;

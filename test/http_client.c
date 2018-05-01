@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+
 #include "lsquic.h"
 #include "test_common.h"
 #include "prog.h"
@@ -453,7 +454,7 @@ main (int argc, char **argv)
 
     prog_init(&prog, LSENG_HTTP, &sports, &http_client_if, &client_ctx);
 
-    while (-1 != (opt = getopt(argc, argv, PROG_OPTS "r:R:IKu:EP:M:n:H:p:h")))
+    while (-1 != (opt = getopt(argc, argv, PROG_OPTS "r:R:IKu:EP:M:n:H:p:ht")))
     {
         switch (opt) {
         case 'I':
@@ -510,6 +511,9 @@ main (int argc, char **argv)
             usage(argv[0]);
             prog_print_common_options(&prog, stdout);
             exit(0);
+        case 't':
+			timeOption2 = 1;
+			break;
         default:
             if (0 != prog_set_opt(&prog, opt, optarg))
                 exit(1);
@@ -533,6 +537,27 @@ main (int argc, char **argv)
     LSQ_DEBUG("entering event loop");
 
     s = prog_run(&prog);
+    
+    if(timeOption2 == 1)
+    {
+		/*struct service_port *sport;
+		sport = TAILQ_FIRST(prog.prog_sports);
+		
+		struct sockaddr * tmp = (struct sockaddr *) &sport->sas;
+		struct sockaddr_in * tmp2 = (struct sockaddr_in*) tmp;
+		
+		char *ip = inet_ntoa(tmp2->sin_addr);*/
+		time_t rawtime;
+		time(&rawtime);
+		char delimiter[] = ":";
+		char *ptr; 
+		ptr = strtok(saveArg,delimiter);
+		printf("\nCurrentTime:%li;Hostname:%s;IpAdress:%s;"
+				, rawtime, prog.prog_hostname, ptr);
+		ptr = strtok(NULL,":");
+		printf("Port:%s;Result:;QuicVersion:%d;\n", ptr, prog.prog_version_cleared);
+	}
+    
     prog_cleanup(&prog);
     if (promise_fd >= 0)
         (void) close(promise_fd);
