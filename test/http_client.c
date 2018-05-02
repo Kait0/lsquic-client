@@ -512,6 +512,7 @@ main (int argc, char **argv)
             prog_print_common_options(&prog, stdout);
             exit(0);
         case 't':
+			//Only outputs information about the connection right now
 			timeOption2 = 1;
 			break;
         default:
@@ -536,16 +537,17 @@ main (int argc, char **argv)
 
 	if (timeOption2 == 1)
 	{
+		//Get the ipadress and port. Partly taken from prog_connect()
 		struct service_port *sport;
 		sport = TAILQ_FIRST(prog.prog_sports);
-
 		struct sockaddr * tmp = (struct sockaddr *) &sport->sas;
 		struct sockaddr_in * tmp2 = (struct sockaddr_in*) tmp;
-
 		char *ip = inet_ntoa(tmp2->sin_addr);
 		int port = ntohs(tmp2->sin_port);
+		//Measure current time
 		time_t rawtime;
 		time(&rawtime);
+		//Print connection details on the console
 		printf("\nCurrentTime:%li;Hostname:%s;IpAdress:%s;", (long)rawtime, prog.prog_hostname, ip);
 		printf("Port:%d;Result:;QuicVersion:%d;\n", port, prog.prog_version_cleared);
 	}
