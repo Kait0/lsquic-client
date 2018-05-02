@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/litespeedtech/lsquic-client.svg?branch=master)](https://travis-ci.org/litespeedtech/lsquic-client)
+
 LiteSpeed QUIC (LSQUIC) Client Library README
 =============================================
 
