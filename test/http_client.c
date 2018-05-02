@@ -28,7 +28,7 @@
 #endif
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <time.h>
 
 #include "lsquic.h"
 #include "test_common.h"
@@ -534,33 +534,30 @@ main (int argc, char **argv)
 
     create_connections(&client_ctx);
 
+	if (timeOption2 == 1)
+	{
+		struct service_port *sport;
+		sport = TAILQ_FIRST(prog.prog_sports);
+
+		struct sockaddr * tmp = (struct sockaddr *) &sport->sas;
+		struct sockaddr_in * tmp2 = (struct sockaddr_in*) tmp;
+
+		char *ip = inet_ntoa(tmp2->sin_addr);
+		int port = ntohs(tmp2->sin_port);
+		time_t rawtime;
+		time(&rawtime);
+		printf("\nCurrentTime:%li;Hostname:%s;IpAdress:%s;", (long)rawtime, prog.prog_hostname, ip);
+		printf("Port:%d;Result:;QuicVersion:%d;\n", port, prog.prog_version_cleared);
+	}
+
     LSQ_DEBUG("entering event loop");
 
     s = prog_run(&prog);
-    
-    if(timeOption2 == 1)
-    {
-		/*struct service_port *sport;
-		sport = TAILQ_FIRST(prog.prog_sports);
-		
-		struct sockaddr * tmp = (struct sockaddr *) &sport->sas;
-		struct sockaddr_in * tmp2 = (struct sockaddr_in*) tmp;
-		
-		char *ip = inet_ntoa(tmp2->sin_addr);*/
-		time_t rawtime;
-		time(&rawtime);
-		char delimiter[] = ":";
-		char *ptr; 
-		ptr = strtok(saveArg,delimiter);
-		printf("\nCurrentTime:%li;Hostname:%s;IpAdress:%s;"
-				, rawtime, prog.prog_hostname, ptr);
-		ptr = strtok(NULL,":");
-		printf("Port:%s;Result:;QuicVersion:%d;\n", ptr, prog.prog_version_cleared);
-	}
-    
     prog_cleanup(&prog);
     if (promise_fd >= 0)
         (void) close(promise_fd);
 
+	printf("\nPress Any Key to Finish\n");
+	getchar();
     exit(0 == s ? EXIT_SUCCESS : EXIT_FAILURE);
 }

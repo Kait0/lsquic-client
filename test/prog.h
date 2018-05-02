@@ -11,7 +11,6 @@ struct event_base;
 struct lsquic_hash;
 struct sport_head;
 
-char saveArg[1024];//For measurements
 int timeOption2;
 
 struct prog
