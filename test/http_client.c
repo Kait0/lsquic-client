@@ -547,11 +547,13 @@ main (int argc, char **argv)
 		//Measure current time
 		time_t rawtime;
 		time(&rawtime);
-		//lsquic_conn_t *conn = TAILQ_FIRST(&client_ctx.conn_ctxs)->conn;
-		//enum lsquic_version version = lsquic_conn_quic_version(conn);
+
+		lsquic_conn_t *conn = TAILQ_FIRST(&client_ctx.conn_ctxs)->conn;
+		enum lsquic_version version = lsquic_conn_quic_version(conn);
+		printf("Result:;QuicVersion:%d;\n", (int)version);
 		//Print connection details on the console
-		printf("\nCurrentTime:%li;Hostname:%s;IpAdress:%s;", (long)rawtime, prog.prog_hostname, ip);
-		printf("Port:%d;Result:;QuicVersion:%d;\n", port, prog.prog_version_cleared);
+		printf("\nCurrentTime:%li;Hostname:%s;IpAdress:%s;Port:%d;", (long)rawtime, prog.prog_hostname, ip, port);
+		
 	}
 
     LSQ_DEBUG("entering event loop");
