@@ -547,6 +547,8 @@ main (int argc, char **argv)
 		//Measure current time
 		time_t rawtime;
 		time(&rawtime);
+		//lsquic_conn_t *conn = TAILQ_FIRST(&client_ctx.conn_ctxs)->conn;
+		//enum lsquic_version version = lsquic_conn_quic_version(conn);
 		//Print connection details on the console
 		printf("\nCurrentTime:%li;Hostname:%s;IpAdress:%s;", (long)rawtime, prog.prog_hostname, ip);
 		printf("Port:%d;Result:;QuicVersion:%d;\n", port, prog.prog_version_cleared);
