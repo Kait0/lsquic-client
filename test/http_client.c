@@ -323,7 +323,7 @@ http_client_on_read (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
         if (nread > 0)
         {
             if (!(client_ctx->hcc_flags & HCC_DISCARD_RESPONSE))
-                write(STDOUT_FILENO, buf, nread);
+                write(STDOUT_FILENO, buf, nread); /*TODO Here is the output of the server answer*/
             if (randomly_reprioritize_streams && (st_h->count++ & 0x3F) == 0)
             {
                 old_prio = lsquic_stream_priority(stream);
@@ -372,6 +372,14 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
     LSQ_INFO("%s called", __func__);
     lsquic_conn_t *conn = lsquic_stream_conn(stream);
     lsquic_conn_ctx_t *conn_h;
+
+    if (timeOption2 == 1)
+    {
+        enum lsquic_version version = lsquic_conn_quic_version(conn);
+        printf("Result2:;QuicVersion:%d;\n", (int)version);
+        /*Print connection details on the console*/
+    }
+
     TAILQ_FOREACH(conn_h, &st_h->client_ctx->conn_ctxs, next_ch)
         if (conn_h->conn == conn)
             break;
@@ -517,7 +525,10 @@ main (int argc, char **argv)
 			break;
         default:
             if (0 != prog_set_opt(&prog, opt, optarg))
+            {
+                LSQ_ERROR("Problem with the flags.\n");
                 exit(1);
+            }     
         }
     }
 
@@ -548,11 +559,8 @@ main (int argc, char **argv)
 		time_t rawtime;
 		time(&rawtime);
 
-		lsquic_conn_t *conn = TAILQ_FIRST(&client_ctx.conn_ctxs)->conn;
-		enum lsquic_version version = lsquic_conn_quic_version(conn);
-		printf("Result:;QuicVersion:%d;\n", (int)version);
 		//Print connection details on the console
-		printf("\nCurrentTime:%li;Hostname:%s;IpAdress:%s;Port:%d;", (long)rawtime, prog.prog_hostname, ip, port);
+		printf("CurrentTime:%li;Hostname:%s;IpAdress:%s;Port:%d;\n", (long)rawtime, prog.prog_hostname, ip, port);
 		
 	}
 
