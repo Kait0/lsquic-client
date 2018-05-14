@@ -501,13 +501,13 @@ apply_peer_settings (struct full_conn *conn)
         return 0;
 #endif
 
-        for (n = 0; n < sizeof(tags) / sizeof(tags[0]); ++n)
-            if (0 != conn->fc_conn.cn_esf->esf_get_peer_setting(
-                        conn->fc_conn.cn_enc_session, tags[n].tag, tags[n].val))
-            {
-                LSQ_INFO("peer did not supply value for %s", tags[n].tag_str);
-                return -1;
-            }
+    for (n = 0; n < sizeof(tags) / sizeof(tags[0]); ++n)
+        if (0 != conn->fc_conn.cn_esf->esf_get_peer_setting(
+                    conn->fc_conn.cn_enc_session, tags[n].tag, tags[n].val))
+        {
+            LSQ_INFO("peer did not supply value for %s", tags[n].tag_str);
+            return -1;
+        }
 
     LSQ_DEBUG("peer settings: CFCW: %u; SFCW: %u; MIDS: %u",
         cfcw, sfcw, mids);
@@ -868,7 +868,7 @@ new_stream_ext (struct full_conn *conn, uint32_t stream_id, int if_idx,
 {
     struct lsquic_stream *stream;
 
-    if (conn->fc_conn.cn_version >= LSQVER_042)
+    if (conn->fc_conn.cn_version >= LSQVER_043)
         stream_ctor_flags |= SCF_ALLOW_OVERLAP;
 
     stream = lsquic_stream_new_ext(stream_id, &conn->fc_pub,
@@ -1011,7 +1011,7 @@ static unsigned
 process_padding_frame (struct full_conn *conn, lsquic_packet_in_t *packet_in,
                        const unsigned char *p, size_t len)
 {
-    if (conn->fc_conn.cn_version >= LSQVER_038)
+    if (conn->fc_conn.cn_version >= LSQVER_039)
         return (unsigned) count_zero_bytes(p, len);
     if (lsquic_is_zero(p, len))
     {
@@ -1793,7 +1793,7 @@ reconstruct_packet_number (struct full_conn *conn, lsquic_packet_in_t *packet_in
 static int
 conn_decrypt_packet (struct full_conn *conn, lsquic_packet_in_t *packet_in)
 {
-        return lsquic_conn_decrypt_packet(&conn->fc_conn, conn->fc_enpub,
+    return lsquic_conn_decrypt_packet(&conn->fc_conn, conn->fc_enpub,
                                                                 packet_in);
 }
 
@@ -1901,7 +1901,7 @@ process_incoming_packet (struct full_conn *conn, lsquic_packet_in_t *packet_in)
             conn->fc_ver_neg.vn_tag = NULL;
             conn->fc_conn.cn_version = conn->fc_ver_neg.vn_ver;
             conn->fc_conn.cn_flags |= LSCONN_VER_SET;
-            if (conn->fc_conn.cn_version >= LSQVER_037)
+            if (conn->fc_conn.cn_version >= LSQVER_039)
             {
                 assert(!(conn->fc_flags & FC_NSTP)); /* This bit off at start */
                 if (conn->fc_settings->es_support_nstp)
@@ -2275,7 +2275,7 @@ packetize_standalone_stream_reset (struct full_conn *conn, uint32_t stream_id)
     }
     lsquic_send_ctl_incr_pack_sz(&conn->fc_send_ctl, packet_out, sz);
     packet_out->po_frame_types |= 1 << QUIC_FRAME_RST_STREAM;
-    LSQ_DEBUG("generated standaloen RST_STREAM frame for stream %"PRIu32,
+    LSQ_DEBUG("generated standalone RST_STREAM frame for stream %"PRIu32,
                                                                     stream_id);
     return 1;
 }
