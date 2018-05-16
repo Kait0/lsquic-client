@@ -2,7 +2,6 @@
 /*
  * http_client.c -- A simple HTTP/QUIC client
  */
-
 #ifndef WIN32
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -160,7 +159,6 @@ struct lsquic_stream_ctx {
     struct lsquic_reader reader;
 };
 
-
 static lsquic_stream_ctx_t *
 http_client_on_new_stream (void *stream_if_ctx, lsquic_stream_t *stream)
 {
@@ -314,7 +312,7 @@ http_client_on_read (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
     unsigned char buf[0x200];
     unsigned nreads = 0;
 #ifdef WIN32
-	srand(GetTickCount());
+    srand(GetTickCount());
 #endif
 
     do
@@ -418,6 +416,7 @@ usage (const char *prog)
 "Usage: %s [opts]\n"
 "\n"
 "Options:\n"
+"				-6 MUST be entered before -s in order to work."
 "   -p PATH     Path to request.  May be specified more than once.\n"
 "   -n CONNS    Number of concurrent connections.  Defaults to 1.\n"
 "   -r NREQS    Total number of requests to send.  Defaults to 1.\n"
@@ -430,6 +429,8 @@ usage (const char *prog)
 "                 content-length\n"
 "   -K          Discard server response\n"
 "   -I          Abort on incomplete reponse from server\n"
+"	-6 IPv6	    The client will try to connect via IPv6\n"
+"				  if this flag is used. If not it will use IPv4.\n"
             , prog);
 }
 
@@ -443,6 +444,8 @@ main (int argc, char **argv)
     struct path_elem *pe;
     struct sport_head sports;
     struct prog prog;
+
+    ipv6 = 0;
 
     TAILQ_INIT(&sports);
     memset(&client_ctx, 0, sizeof(client_ctx));
@@ -462,9 +465,12 @@ main (int argc, char **argv)
 
     prog_init(&prog, LSENG_HTTP, &sports, &http_client_if, &client_ctx);
 
-    while (-1 != (opt = getopt(argc, argv, PROG_OPTS "r:R:IKu:EP:M:n:H:p:ht")))
+    while (-1 != (opt = getopt(argc, argv, PROG_OPTS "6r:R:IKu:EP:M:n:H:p:ht")))
     {
         switch (opt) {
+        case '6':
+            ipv6 = 1;
+            break;
         case 'I':
             client_ctx.hcc_flags |= HCC_ABORT_ON_INCOMPLETE;
             break;
@@ -508,7 +514,7 @@ main (int argc, char **argv)
             break;
         case 'H':
             client_ctx.hostname = optarg;
-            prog.prog_hostname = optarg;            /* Pokes into prog */
+            prog.prog_hostname = optarg; /* Pokes into prog */
             break;
         case 'p':
             pe = calloc(1, sizeof(*pe));
