@@ -13,8 +13,6 @@ struct event_base;
 struct lsquic_hash;
 struct sport_head;
 
-int timeOption2;
-
 struct prog
 {
     struct packout_buf_allocator    prog_pba;

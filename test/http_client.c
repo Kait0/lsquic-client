@@ -43,6 +43,11 @@ static int randomly_reprioritize_streams;
  */
 static int promise_fd = -1;
 
+/*If true than the code outputs a timemeasurement in machinereadable form*/
+static int time_option;
+char response_buf[5000];
+int once = 1;
+
 struct lsquic_conn_ctx;
 
 struct path_elem {
@@ -317,11 +322,20 @@ http_client_on_read (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
 
     do
     {
-        nread = lsquic_stream_read(stream, buf, sizeof(buf));
+        if (time_option == 1 && once == 1)
+        {
+            once = 0;
+            nread = lsquic_stream_read(stream, response_buf, sizeof(response_buf));               
+        }
+        else
+            nread = lsquic_stream_read(stream, buf, sizeof(buf));
         if (nread > 0)
         {
-            if (!(client_ctx->hcc_flags & HCC_DISCARD_RESPONSE))
-                write(STDOUT_FILENO, buf, nread); /*TODO Here is the output of the server answer*/
+            if(time_option != 1)
+            {
+                if (!(client_ctx->hcc_flags & HCC_DISCARD_RESPONSE))
+                    write(STDOUT_FILENO, buf, nread); /*Output Server Response*/
+            }
             if (randomly_reprioritize_streams && (st_h->count++ & 0x3F) == 0)
             {
                 old_prio = lsquic_stream_priority(stream);
@@ -371,10 +385,15 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
     lsquic_conn_t *conn = lsquic_stream_conn(stream);
     lsquic_conn_ctx_t *conn_h;
 
-    if (timeOption2 == 1)
+    if (time_option == 1)
     {
+        char *c;
+        c = strchr(response_buf, '\r');
+        *c = '\0';
+        c = strchr(response_buf, ' ');
+        c++;
         enum lsquic_version version = lsquic_conn_quic_version(conn);
-        printf("Result2:;QuicVersion:%d;\n", (int)version);
+        printf("Result:%s;QuicVersion:%d;\n",c, (int)version);
         /*Print connection details on the console*/
     }
 
@@ -527,7 +546,7 @@ main (int argc, char **argv)
             exit(0);
         case 't':
 			//Only outputs information about the connection right now
-			timeOption2 = 1;
+			time_option = 1;
 			break;
         default:
             if (0 != prog_set_opt(&prog, opt, optarg))
@@ -552,21 +571,21 @@ main (int argc, char **argv)
 
     create_connections(&client_ctx);
 
-	if (timeOption2 == 1)
+	if (time_option == 1)
 	{
-		//Get the ipadress and port. Partly taken from prog_connect()
+		/*Get the ipadress and port. Partly taken from prog_connect()*/
 		struct service_port *sport;
 		sport = TAILQ_FIRST(prog.prog_sports);
 		struct sockaddr * tmp = (struct sockaddr *) &sport->sas;
 		struct sockaddr_in * tmp2 = (struct sockaddr_in*) tmp;
 		char *ip = inet_ntoa(tmp2->sin_addr);
 		int port = ntohs(tmp2->sin_port);
-		//Measure current time
+		/*Measure current time*/
 		time_t rawtime;
 		time(&rawtime);
 
-		//Print connection details on the console
-		printf("CurrentTime:%li;Hostname:%s;IpAdress:%s;Port:%d;\n", (long)rawtime, prog.prog_hostname, ip, port);
+		/*Print connection details on the console*/
+		printf("CurrentTime:%li;Hostname:%s;IpAdress:%s;Port:%d;", (long)rawtime, prog.prog_hostname, ip, port);
 		
 	}
 
