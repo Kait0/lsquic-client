@@ -385,6 +385,8 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
     lsquic_conn_t *conn = lsquic_stream_conn(stream);
     lsquic_conn_ctx_t *conn_h;
 
+    enum lsquic_version version = lsquic_conn_quic_version(conn);
+    
     if (time_option == 1)
     {
         char *c;
@@ -392,7 +394,7 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
         *c = '\0';
         c = strchr(response_buf, ' ');
         c++;
-        enum lsquic_version version = lsquic_conn_quic_version(conn);
+        //enum lsquic_version version = lsquic_conn_quic_version(conn);
         printf("Result:%s;QuicVersion:%d;\n",c, (int)version);
         /*Print connection details on the console*/
     }
