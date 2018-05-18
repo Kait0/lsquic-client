@@ -606,7 +606,7 @@ while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))   
 		time(&rawtime);
 
 		/*Print connection details on the console*/
-		printf("CurrentTime:%li;Hostname:%s;IpAdress:%s;Port:%d;", (long)rawtime, prog.prog_hostname, ip, port);
+		printf("CurrentTime:%li;Hostname:%s;Path:%s;IpAdress:%s;Port:%d;", (long)rawtime, prog.prog_hostname, pe->path, ip, port);
 		
 	}
 
