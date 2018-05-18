@@ -402,12 +402,25 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
     {
         char *c;
         c = strchr(response_buf, '\r');
-        *c = '\0';
-        c = strchr(response_buf, ' ');
-        c++;
-        enum lsquic_version version = lsquic_conn_quic_version(conn);
-        printf("Result:%s;QuicVersion:%s;\n",c, string_from_quic_enum(version));
-        /*Print connection details on the console*/
+        if(c != NULL)
+        {
+            *c = '\0';
+            c = strchr(response_buf, ' ');
+            if(c != NULL)
+            {
+                c++;
+                enum lsquic_version version = lsquic_conn_quic_version(conn);
+                printf("Result:%s;QuicVersion:%s;\n",c, string_from_quic_enum(version));        /*Print connection details on the console*/
+            }
+            else
+            {
+                printf("Server response is unusual\n");
+            }
+        }
+        else
+        {
+            printf("Server response is unusual\n");
+        }
     }
 
     TAILQ_FOREACH(conn_h, &st_h->client_ctx->conn_ctxs, next_ch)
