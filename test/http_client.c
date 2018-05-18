@@ -30,6 +30,8 @@
 #include <fcntl.h>
 #include <time.h>
 
+#include <event2/event.h>
+
 #include "lsquic.h"
 #include "test_common.h"
 #include "prog.h"
@@ -94,6 +96,13 @@ struct lsquic_conn_ctx {
                                         */
 };
 
+/*Given an lsquic_version enum it return the string representation*/
+char *string_from_quic_enum(enum lsquic_version vers)
+{
+    char *strings[] = { "LSQVER_035", "LSQVER_039", "LSQVER_043", "Number_of_versions"};
+
+    return strings[vers];
+}
 
 static void
 create_connections (struct http_client_ctx *client_ctx)
@@ -397,7 +406,7 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
         c = strchr(response_buf, ' ');
         c++;
         enum lsquic_version version = lsquic_conn_quic_version(conn);
-        printf("Result:%s;QuicVersion:%d;\n",c, (int)version);
+        printf("Result:%s;QuicVersion:%s;\n",c, string_from_quic_enum(version));
         /*Print connection details on the console*/
     }
 
@@ -578,10 +587,20 @@ while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))   
 		/*Get the ipadress and port. Partly taken from prog_connect()*/
 		struct service_port *sport;
 		sport = TAILQ_FIRST(prog.prog_sports);
-		struct sockaddr * tmp = (struct sockaddr *) &sport->sas;
-		struct sockaddr_in * tmp2 = (struct sockaddr_in*) tmp;
-		char *ip = inet_ntoa(tmp2->sin_addr);
-		int port = ntohs(tmp2->sin_port);
+        char ip[46];
+        int port;
+        if(sport->sas.ss_family == 2)
+        {
+            struct sockaddr_in  *const sa = (void *)&sport->sas;
+            inet_ntop(AF_INET, &sa->sin_addr, ip, 46);
+            port = ntohs(sa->sin_port);
+        }
+        else
+        {
+            struct sockaddr_in6  *const sa6 = (void *)&sport->sas;
+            inet_ntop(AF_INET6, &sa6->sin6_addr, ip, 46);
+            port = ntohs(sa6->sin6_port);
+        }
 		/*Measure current time*/
 		time_t rawtime;
 		time(&rawtime);
