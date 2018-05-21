@@ -28,7 +28,11 @@
 #include <sys/queue.h>
 #include <fcntl.h>
 #include <sys/types.h>
+
+#include "test_config.h"
+#if HAVE_REGEX
 #include <regex.h>
+#endif
 
 #include <event2/event.h>
 
@@ -45,11 +49,6 @@
 #   define CLOSE_SOCKET close
 #   define CHAR_CAST
 #else
-
-    /* XXX detect these using cmake? */
-#   define HAVE_IP_DONTFRAG 1
-#   define HAVE_IP_MTU_DISCOVER 1
-
 #   define SOCKET_TYPE SOCKET
 #   define CLOSE_SOCKET closesocket
 #   define CHAR_CAST (char *)
@@ -213,13 +212,18 @@ struct service_port *
 sport_new (const char *optarg, struct prog *prog)
 {
     struct service_port *const sport = malloc(sizeof(*sport));
+#if HAVE_REGEX
     regex_t re;
     regmatch_t matches[5];
-    int re_code, port, e;
-    const char *host;
+    int re_code;
     const char *port_str;
-    struct addrinfo hints, *res = NULL;
     char errbuf[80];
+#else
+    char *port_str;
+#endif
+    int port, e;
+    const char *host;
+    struct addrinfo hints, *res = NULL;
 #if __linux__
     sport->n_dropped = 0;
     sport->drop_init = 0;
@@ -240,6 +244,7 @@ sport_new (const char *optarg, struct prog *prog)
     else
         sport->if_name[0] = '\0';
 #endif
+#if HAVE_REGEX
     re_code = regcomp(&re, "^(.*):([0-9][0-9]*)$"
                           "|^([0-9][0-9]*)$"
                           "|^(..*)$"
@@ -281,6 +286,20 @@ sport_new (const char *optarg, struct prog *prog)
         port_str = "443";
         port = 443;
     }
+#else
+    host = addr;
+    port_str = strrchr(addr, ':');
+    if (port_str)
+    {
+        *port_str++ = '\0';
+        port = atoi(port_str);
+    }
+    else
+    {
+        port_str = "443";
+        port = 443;
+    }
+#endif
     assert(host);
     LSQ_DEBUG("host: %s; port: %d", host, port);
     if (strlen(host) > sizeof(sport->host) - 1)
@@ -324,8 +343,10 @@ sport_new (const char *optarg, struct prog *prog)
             prog->prog_hostname = sport->host;
     }
 
+#if HAVE_REGEX
     if (0 == re_code)
         regfree(&re);
+#endif
     if (res)
         freeaddrinfo(res);
     free(addr);
@@ -333,8 +354,10 @@ sport_new (const char *optarg, struct prog *prog)
     return sport;
 
   err:
+#if HAVE_REGEX
     if (0 == re_code)
         regfree(&re);
+#endif
     if (res)
         freeaddrinfo(res);
     free(sport);

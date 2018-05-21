@@ -1,3 +1,11 @@
+2018-05-18
+
+    - [API] Expose useful lsquic_ver2str[] in lsquic.h
+    - [BUGFIX] Do not produce packet sequence gaps due to STREAM frame elision
+    - Improve checks of number of incoming streams limit and associated
+      error reporting.
+    - [BUGFIX] Command-line option `-6` now works correctly.
+
 2018-05-16
 
     - [FEATURE] DNS resolution

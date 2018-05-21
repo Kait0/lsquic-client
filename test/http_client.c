@@ -489,10 +489,8 @@ main (int argc, char **argv)
 while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))    {
         switch (opt) {
         case '4':
-            prog.prog_ipver = 4;
-            break;
         case '6':
-            prog.prog_ipver = 4;
+            prog.prog_ipver = opt - '0';
             break;
         case 'I':
             client_ctx.hcc_flags |= HCC_ABORT_ON_INCOMPLETE;
