@@ -30,6 +30,9 @@ struct prog
     int                             prog_ipver;     /* 0, 4, or 6 */
 };
 
+/*If true than the code outputs a timemeasurement in machinereadable form*/
+int time_option;
+
 void
 prog_init (struct prog *, unsigned lsquic_engine_flags, struct sport_head *,
                     const struct lsquic_stream_if *, void *stream_if_ctx);

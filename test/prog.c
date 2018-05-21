@@ -28,6 +28,7 @@
 #include "test_common.h"
 #include "prog.h"
 
+
 static int prog_stopped;
 
 static const struct lsquic_packout_mem_if pmi = {
@@ -244,6 +245,19 @@ prog_eb (struct prog *prog)
     return prog->prog_eb;
 }
 
+/*from https://gist.github.com/diabloneo/9619917*/
+void timespec_diff(struct timespec *start, struct timespec *stop, struct timespec *result)
+{
+    if ((stop->tv_nsec - start->tv_nsec) < 0) {
+        result->tv_sec = stop->tv_sec - start->tv_sec - 1;
+        result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
+    } else {
+        result->tv_sec = stop->tv_sec - start->tv_sec;
+        result->tv_nsec = stop->tv_nsec - start->tv_nsec;
+    }
+
+    return;
+}
 
 int
 prog_connect (struct prog *prog)
@@ -251,20 +265,32 @@ prog_connect (struct prog *prog)
     struct service_port *sport;
 
     sport = TAILQ_FIRST(prog->prog_sports);
-    clock_t start, end;
-    double cpu_time_used;
-    start = clock();
-    if (NULL == lsquic_engine_connect(prog->prog_engine,
-                    (struct sockaddr *) &sport->sas, sport, NULL,
-                    prog->prog_hostname ? prog->prog_hostname : sport->host,
-                    prog->prog_max_packet_size))
-    {
-        return -1;
-    }
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("ConnectionEstablishmentTime:%.9f", cpu_time_used);/*TODO this is only has precision of 3 digits after , need to improve this */
 
+    if(time_option == 1)
+    {
+        struct timespec ts_start, ts_end, ts_result;
+        timespec_get(&ts_start, TIME_UTC);
+        if (NULL == lsquic_engine_connect(prog->prog_engine,
+                        (struct sockaddr *) &sport->sas, sport, NULL,
+                        prog->prog_hostname ? prog->prog_hostname : sport->host,
+                        prog->prog_max_packet_size))
+        {
+            return -1;
+        }
+        timespec_get(&ts_end, TIME_UTC);
+        timespec_diff(&ts_start,&ts_end, &ts_result);
+        printf("%.3lf;", (ts_result.tv_nsec/(double) 1000));
+    }
+    else
+    {
+        if (NULL == lsquic_engine_connect(prog->prog_engine,
+            (struct sockaddr *) &sport->sas, sport, NULL,
+            prog->prog_hostname ? prog->prog_hostname : sport->host,
+            prog->prog_max_packet_size))
+        {
+            return -1;
+        }
+    }
     prog_process_conns(prog);
     return 0;
 }

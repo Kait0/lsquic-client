@@ -46,8 +46,6 @@ static int randomly_reprioritize_streams;
  */
 static int promise_fd = -1;
 
-/*If true than the code outputs a timemeasurement in machinereadable form*/
-static int time_option;
 char response_buf[5000];
 int once = 1;
 
@@ -95,14 +93,6 @@ struct lsquic_conn_ctx {
                                         * incremented as push promises are accepted.
                                         */
 };
-
-/*Given an lsquic_version enum it return the string representation*/
-char *string_from_quic_enum(enum lsquic_version vers)
-{
-    char *strings[] = { "LSQVER_035", "LSQVER_039", "LSQVER_043", "Number_of_versions"};
-
-    return strings[vers];
-}
 
 static void
 create_connections (struct http_client_ctx *client_ctx)
@@ -397,8 +387,6 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
     LSQ_INFO("%s called", __func__);
     lsquic_conn_t *conn = lsquic_stream_conn(stream);
     lsquic_conn_ctx_t *conn_h;
-
-    enum lsquic_version version = lsquic_conn_quic_version(conn);
     
     if (time_option == 1)
     {
@@ -412,16 +400,16 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
             {
                 c++;
                 enum lsquic_version version = lsquic_conn_quic_version(conn);
-                printf("Result:%s;QuicVersion:%s;\n",c, string_from_quic_enum(version));        /*Print connection details on the console*/
+                printf("%s;%s;\n",c, lsquic_ver2str[version]);        /*Print connection details on the console*/
             }
             else
             {
-                printf("Server response is unusual\n");
+                LSQ_ERROR("Server response is unusual\n");
             }
         }
         else
         {
-            printf("Server response is unusual\n");
+            LSQ_ERROR("Server response is unusual\n");
         }
     }
 
@@ -477,6 +465,10 @@ usage (const char *prog)
 "   -I          Abort on incomplete reponse from server\n"
 "   -4          Prefer IPv4 when resolving hostname\n"
 "   -6          Prefer IPv6 when resolving hostname\n"
+"   -t          Output information about the connection in machine readable form.\n"
+"                 Format:\n"
+"                 Time to establish quic connection in microseconds;CurrentTime;\n"
+"                 Hostname;Path;IpAdress;Port;Result;QuicVersion;\n"
             , prog);
 }
 
@@ -490,6 +482,8 @@ main (int argc, char **argv)
     struct path_elem *pe;
     struct sport_head sports;
     struct prog prog;
+
+    time_option = 0;
 
     TAILQ_INIT(&sports);
     memset(&client_ctx, 0, sizeof(client_ctx));
@@ -569,7 +563,6 @@ while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))   
             prog_print_common_options(&prog, stdout);
             exit(0);
         case 't':
-			//Only outputs information about the connection right now
 			time_option = 1;
 			break;
         default:
@@ -619,7 +612,7 @@ while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))   
 		time(&rawtime);
 
 		/*Print connection details on the console*/
-		printf("CurrentTime:%li;Hostname:%s;Path:%s;IpAdress:%s;Port:%d;", (long)rawtime, prog.prog_hostname, pe->path, ip, port);
+		printf("%li;%s;%s;%s;%d;", (long)rawtime, prog.prog_hostname, pe->path, ip, port);
 		
 	}
 
