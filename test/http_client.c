@@ -152,9 +152,29 @@ http_client_on_conn_closed (lsquic_conn_t *conn)
 }
 
 
+/*from https://gist.github.com/diabloneo/9619917*/
+void timespec_diff(struct timespec *start, struct timespec *stop, struct timespec *result)
+{
+    if ((stop->tv_nsec - start->tv_nsec) < 0) {
+        result->tv_sec = stop->tv_sec - start->tv_sec - 1;
+        result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
+    } else {
+        result->tv_sec = stop->tv_sec - start->tv_sec;
+        result->tv_nsec = stop->tv_nsec - start->tv_nsec;
+    }
+
+    return;
+}
+
 static void
 http_client_on_hsk_done (lsquic_conn_t *conn, int ok)
 {
+    if(time_option == 1)
+    {
+        timespec_get(&ts_end, TIME_UTC);
+        timespec_diff(&ts_start,&ts_end, &ts_result);
+        printf("%.3lf;", (ts_result.tv_nsec/(double) 1000000));
+    }
     LSQ_INFO("handshake %s", ok ? "completed successfully" : "failed");
 }
 
@@ -475,8 +495,8 @@ usage (const char *prog)
 "   -6          Prefer IPv6 when resolving hostname\n"
 "   -t          Output information about the connection in machine readable form.\n"
 "                 Format:\n"
-"                 Time to establish quic connection in microseconds;CurrentTime;\n"
-"                 Hostname;Path;IpAdress;Port;Result;QuicVersion;\n"
+"                 CurrentTime;Hostname;Path;IpAdress;Port;\n"
+"                 Time to establish quic connection in milliseconds;Result;QuicVersion;\n"
             , prog);
 }
 
