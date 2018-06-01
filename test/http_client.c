@@ -418,16 +418,25 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
     if (time_option == 1)
     {
         char *c;
-        c = strchr(response_buf, '\r');
-        if(c != NULL)
+        c = strchr(response_buf, ' ');
+        if (c != NULL)
         {
-            *c = '\0';
-            c = strchr(response_buf, ' ');
+            c++;
+            c = strchr(c, ' ');
             if(c != NULL)
             {
-                c++;
-                enum lsquic_version version = lsquic_conn_quic_version(conn);
-                printf("%s;%s;\n",c, lsquic_ver2str[version]);        /*Print connection details on the console*/
+                *c = '\0';
+                c = strchr(response_buf, ' ');
+                if(c != NULL)
+                {
+                    c++;
+                    enum lsquic_version version = lsquic_conn_quic_version(conn);
+                    printf("%s;%s;\n",c, lsquic_ver2str[version]);        /*Print connection details on the console*/
+                }
+                else
+                {
+                    LSQ_ERROR("Server response is unusual\n");
+                }
             }
             else
             {
