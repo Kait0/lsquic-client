@@ -106,4 +106,5 @@ create_lsquic_reader_ctx (const char *filename);
 void
 destroy_lsquic_reader_ctx (struct reader_ctx *ctx);
 
+void timespec_diff(struct timespec *start, struct timespec *stop, struct timespec *result);
 #endif

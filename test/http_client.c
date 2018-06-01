@@ -504,7 +504,7 @@ usage (const char *prog)
 "   -6          Prefer IPv6 when resolving hostname\n"
 "   -t          Output information about the connection in machine readable form.\n"
 "                 Format:\n"
-"                 CurrentTime;Hostname;Path;IpAdress;Port;\n"
+"                 Time it took to resolve DNS;CurrentTime;Hostname;Path;IpAdress;Port;\n"
 "                 Time to establish quic connection in milliseconds;Result;QuicVersion;\n"
             , prog);
 }
