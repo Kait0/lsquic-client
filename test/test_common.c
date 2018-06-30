@@ -330,13 +330,13 @@ sport_new (const char *optarg, struct prog *prog)
         if(time_option == 1)
             timespec_get(&ts_dns_start, TIME_UTC);
         
-        e = getaddrinfo(host, port_str, &hints, &res);
+	e = getaddrinfo(host, port_str, &hints, &res);
 
-        if(time_option == 1)
+	if(time_option == 1)
         {
             timespec_get(&ts_dns_end, TIME_UTC);
             timespec_diff(&ts_dns_start,&ts_dns_end, &ts_dns_result);
-            printf("%.3lf;", (ts_dns_result.tv_nsec/(double) 1000000));
+            printf("%.3lf;",(ts_dns_result.tv_nsec/(double) 1000000));
         }
         
         if (e != 0)

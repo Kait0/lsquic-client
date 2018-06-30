@@ -660,7 +660,7 @@ while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))   
     if (promise_fd >= 0)
         (void) close(promise_fd);
 
-	printf("\nPress Any Key to Finish\n");
-	getchar();
+	//printf("\nPress Any Key to Finish\n");
+	//getchar();
     exit(0 == s ? EXIT_SUCCESS : EXIT_FAILURE);
 }
