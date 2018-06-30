@@ -202,7 +202,7 @@ http_client_on_hsk_done (lsquic_conn_t *conn, int ok)
     {
         timespec_get(&ts_end, TIME_UTC);
         timespec_diff(&ts_start,&ts_end, &ts_result);
-        printf("%.3lf;", (ts_result.tv_nsec/(double) 1000000));
+        number_filled += snprintf(output + number_filled, 500 - number_filled, "%.3lf;", (ts_result.tv_nsec/(double) 1000000));
     }
     LSQ_INFO("handshake %s", ok ? "completed successfully" : "failed");
 }
@@ -460,7 +460,7 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
                 {
                     c++;
                     enum lsquic_version version = lsquic_conn_quic_version(conn);
-                    printf("%s;%s;\n",c, lsquic_ver2str[version]);        /*Print connection details on the console*/
+                    number_filled += snprintf(output + number_filled, 500 - number_filled,"%s;%s;\n",c, lsquic_ver2str[version]);        /*Print connection details on the console*/
                 }
                 else
                 {
@@ -549,6 +549,7 @@ main (int argc, char **argv)
     struct sport_head sports;
     struct prog prog;
 
+    number_filled = 0;
     time_option = 0;
 
     TAILQ_INIT(&sports);
@@ -677,8 +678,8 @@ while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))   
 		time_t rawtime;
 		time(&rawtime);
 
-		/*Print connection details on the console*/
-		printf("%li;%s;%s;%s;%d;", (long)rawtime, prog.prog_hostname, pe->path, ip, port);
+		/*Store the output in a buffer to print at the end so that nothing gets printed on the console if the connection fails*/
+		number_filled += snprintf(output + number_filled, 500 - number_filled, "%li;%s;%s;%s;%d;", (long)rawtime, prog.prog_hostname, pe->path, ip, port);
 		
 	}
 
@@ -689,7 +690,12 @@ while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))   
     if (promise_fd >= 0)
         (void) close(promise_fd);
 
-	//printf("\nPress Enter to Finish\n");
-	getchar();
+    if(time_option == 1)
+    {
+        /*Only print the whole output right before exit*/
+        printf("%s", output);
+    }
+    //printf("\nPress Enter to Finish\n");
+	//getchar();
     exit(0 == s ? EXIT_SUCCESS : EXIT_FAILURE);
 }

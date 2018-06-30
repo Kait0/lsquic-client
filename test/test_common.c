@@ -336,7 +336,7 @@ sport_new (const char *optarg, struct prog *prog)
         {
             timespec_get(&ts_dns_end, TIME_UTC);
             timespec_diff(&ts_dns_start,&ts_dns_end, &ts_dns_result);
-            printf("%.3lf;", (ts_dns_result.tv_nsec/(double) 1000000));
+            number_filled += snprintf(output + number_filled, 500 - number_filled,"%.3lf;", (ts_dns_result.tv_nsec/(double) 1000000));
         }
         
         if (e != 0)
