@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jaeger/lsquic-fork/test/unittests/test_senhist.c
+assert.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+inttypes.h
+-
+lsquic_int_types.h
+/home/jaeger/lsquic-fork/test/unittests/lsquic_int_types.h
+lsquic_senhist.h
+/home/jaeger/lsquic-fork/test/unittests/lsquic_senhist.h
+lsquic_logger.h
+/home/jaeger/lsquic-fork/test/unittests/lsquic_logger.h
+
+test/unittests/../../src/liblsquic/lsquic_int_types.h
+stdint.h
+-
+
+test/unittests/../../src/liblsquic/lsquic_logger.h
+stdint.h
+-
+stdio.h
+-
+
+test/unittests/../../src/liblsquic/lsquic_senhist.h
+

@@ -701,7 +701,7 @@ while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))   
         /*Only print the whole output right before exit*/
         printf("%s", output);
     }
-    //printf("\nPress Enter to Finish\n");
-	//getchar();
+    //printf("Press Enter to Finish\n");
+    //getchar();
     exit(0 == s ? EXIT_SUCCESS : EXIT_FAILURE);
 }
