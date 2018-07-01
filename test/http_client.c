@@ -465,16 +465,22 @@ http_client_on_close (lsquic_stream_t *stream, lsquic_stream_ctx_t *st_h)
                 else
                 {
                     LSQ_ERROR("Server response is unusual\n");
+                    free(st_h);
+                    exit(EXIT_FAILURE);
                 }
             }
             else
             {
                 LSQ_ERROR("Server response is unusual\n");
+                free(st_h);
+                exit(EXIT_FAILURE);
             }
         }
         else
         {
             LSQ_ERROR("Server response is unusual\n");
+            free(st_h);
+            exit(EXIT_FAILURE);
         }
     }
 
