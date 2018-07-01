@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jaeger/lsquic-fork/test/unittests/graph_cubic.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+sys/ioctl.h
+-
+termios.h
+-
+unistd.h
+-
+getopt.h
+-
+lsquic_types.h
+/home/jaeger/lsquic-fork/test/unittests/lsquic_types.h
+lsquic_int_types.h
+/home/jaeger/lsquic-fork/test/unittests/lsquic_int_types.h
+lsquic_cubic.h
+/home/jaeger/lsquic-fork/test/unittests/lsquic_cubic.h
+
+include/lsquic_types.h
+stdint.h
+-
+
+test/unittests/../../src/liblsquic/lsquic_cubic.h
+
+test/unittests/../../src/liblsquic/lsquic_int_types.h
+stdint.h
+-
+

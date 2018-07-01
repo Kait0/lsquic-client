@@ -54,6 +54,10 @@ struct service_port {
     struct prog               *sp_prog;
 };
 
+/*Output string*/
+char output[500];
+int number_filled;
+
 TAILQ_HEAD(sport_head, service_port);
 
 struct service_port *

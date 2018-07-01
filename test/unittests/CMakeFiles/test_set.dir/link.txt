@@ -1,0 +1,1 @@
+/usr/bin/cc     -Wall -Wextra -Wno-unused-parameter -fno-omit-frame-pointer -O0 -g3  -Wno-unused-value   CMakeFiles/test_set.dir/test_set.c.o  -o test_set  -L/home/jaeger/tmp/boringssl-libs -rdynamic ../../src/liblsquic/liblsquic.a -lm -Wl,-rpath,/home/jaeger/tmp/boringssl-libs 

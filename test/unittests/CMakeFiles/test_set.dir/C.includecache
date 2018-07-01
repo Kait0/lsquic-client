@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jaeger/lsquic-fork/test/unittests/test_set.c
+assert.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+lsquic_set.h
+/home/jaeger/lsquic-fork/test/unittests/lsquic_set.h
+
+test/unittests/../../src/liblsquic/lsquic_set.h
+stdint.h
+-
+
