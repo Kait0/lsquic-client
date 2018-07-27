@@ -645,12 +645,13 @@ sport_init_client (struct service_port *sport, struct lsquic_engine *engine,
         socklen = sizeof(struct sockaddr_in);
         u.sin.sin_family      = AF_INET;
         u.sin.sin_addr.s_addr = INADDR_ANY;
-        u.sin.sin_port        = 0;
+        u.sin.sin_port        = local_port; /*Port that is used on the local client*/
         break;
     case AF_INET6:
         socklen = sizeof(struct sockaddr_in6);
         memset(&u.sin6, 0, sizeof(u.sin6));
         u.sin6.sin6_family = AF_INET6;
+        u.sin6.sin6_port = local_port;
         break;
     default:
         errno = EINVAL;

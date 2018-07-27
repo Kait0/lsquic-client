@@ -541,6 +541,8 @@ usage (const char *prog)
 "                 Format:\n"
 "                 Time it took to resolve DNS;CurrentTime;Hostname;Path;IpAdress;Port;\n"
 "                 Time to establish quic connection in milliseconds;Result;QuicVersion;\n"
+"   -c PORT     Defines which port will be used locally on the machine for the connection.\n"
+"                 Defaults to 0 which means random port.\n"
             , prog);
 }
 
@@ -557,6 +559,7 @@ main (int argc, char **argv)
 
     number_filled = 0;
     time_option = 0;
+    local_port = 0; /*Pick a random port by defualt*/
 
     TAILQ_INIT(&sports);
     memset(&client_ctx, 0, sizeof(client_ctx));
@@ -575,12 +578,14 @@ main (int argc, char **argv)
 
     prog_init(&prog, LSENG_HTTP, &sports, &http_client_if, &client_ctx);
 
-while (-1 != (opt = getopt(argc, argv, PROG_OPTS "46r:R:IKu:EP:M:n:H:p:ht")))    {
+while (-1 != (opt = getopt(argc, argv, PROG_OPTS "c:46r:R:IKu:EP:M:n:H:p:ht")))    {
         switch (opt) {
         case '4':
         case '6':
             prog.prog_ipver = opt - '0';
             break;
+        case 'c':
+            local_port = atoi(optarg);
         case 'I':
             client_ctx.hcc_flags |= HCC_ABORT_ON_INCOMPLETE;
             break;

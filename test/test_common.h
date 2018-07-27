@@ -57,6 +57,7 @@ struct service_port {
 /*Output string*/
 char output[500];
 int number_filled;
+int local_port;
 
 TAILQ_HEAD(sport_head, service_port);
 
