@@ -115,24 +115,24 @@ ENDIF()
 
 
 IF (NOT MSVC)
-add_executable(http_client
-    test/http_client.c
+add_executable(quic_perf
+    test/quic_perf.c
     test/prog.c
     test/test_common.c
 )
-target_link_libraries(http_client lsquic event pthread libssl.a libcrypto.a ${FIULIB} z m)
+target_link_libraries(quic_perf lsquic event pthread libssl.a libcrypto.a ${FIULIB} z m)
 
 #MSVC
 ELSE()
-add_executable(http_client
-    test/http_client.c
+add_executable(quic_perf
+    test/quic_perf.c
     test/prog.c
     test/test_common.c
     wincompat/getopt.c
     wincompat/getopt1.c
 )
 
-target_link_libraries(http_client
+target_link_libraries(quic_perf
 		debug  $(SolutionDir)src/liblsquic/debug/lsquic.lib
 		debug  ${VCPKG_BASE_DIR}/debug/lib/event.lib
 		debug  ${VCPKG_BASE_DIR}/debug/lib/zlibd.lib
@@ -148,7 +148,7 @@ target_link_libraries(http_client
 
 ENDIF()
 
-#target_link_libraries(http_client lsquic event pthread libssl.a libcrypto.a ${FIULIB} z m)
+#target_link_libraries(quic_perf lsquic event pthread libssl.a libcrypto.a ${FIULIB} z m)
 
 add_subdirectory(src)
 

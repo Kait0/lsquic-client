@@ -24,7 +24,7 @@ Documentation
 The documentation for this module is admittedly sparse.  The API is
 documented in include/lsquic.h.  If you have doxygen, you can run
 `doxygen dox.cfg` or `make docs`.  The example program is
-test/http_client.c: a bare-bones, but working, QUIC client.  Have a look
+test/quic_perf.c: a bare-bones, but working, QUIC client.  Have a look
 in EXAMPLES.txt to see how it can be used.
 
 Requirements
@@ -91,7 +91,7 @@ ln -s $BORINGSSL_SOURCE/crypto/libcrypto.a
 Building LSQUIC Client Library
 ------------------------------
 
-LSQUIC's `http_client` and the tests link BoringSSL libraries statically.
+LSQUIC's `quic_perf` and the tests link BoringSSL libraries statically.
 Following previous section, you can build LSQUIC as follows:
 
 1. Get the source code
@@ -118,14 +118,14 @@ make test
 
 Building with Docker
 ---------
-The library and http_client example can be built with Docker.
+The library and quic_perf example can be built with Docker.
 ```
 docker build -t lsquic-client .
 ```
 
-Then you can use the http_client example from the command line.
+Then you can use the quic_perf example from the command line.
 ```
-docker run -it --rm lsquic-client http_client -H www.google.com -s 74.125.22.106:443 -p /
+docker run -it --rm lsquic-client quic_perf -H www.google.com -s 74.125.22.106:443 -p /
 ```
 
 Platforms

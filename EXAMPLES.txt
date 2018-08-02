@@ -2,28 +2,28 @@
 LSQUIC Examples
 ===============
 
-test/http_client.c demonstrates how to use HTTP features of QUIC.
+test/quic_perf.c demonstrates how to use HTTP features of QUIC.
 
 Usage Examples
 --------------
 
 Fetch Google's home page:
 
-    ./http_client -s www.google.com -p /
+    ./quic_perf -s www.google.com -p /
 
 The default port number is 443, but it can be specified after colon
 using the -s flag.  The value of the `host' header as well as the SNI
 value defaults to the host part of the -s option.  -H option can be
 used to override it.  For example:
 
-    ./http_client -H www.youtube.com -s www.google.com:443 -p / -M HEAD
+    ./quic_perf -H www.youtube.com -s www.google.com:443 -p / -M HEAD
 
 The host part can be an IP address.  Both IPv4 and IPv6 are supported.
-See ./http_client -h for a (long) list of different flags.
+See ./quic_perf -h for a (long) list of different flags.
 
 POST a file to calculate its CRC32 checksum:
 
-    ./http_client -H www.litespeedtech.com -s 443 \
+    ./quic_perf -H www.litespeedtech.com -s 443 \
                         -p /cgi-bin/crc32.cgi -P file-256M -M POST
 
     HTTP/1.1 200 OK
@@ -47,7 +47,7 @@ On the command line, I do
 
 To submit several requests concurrently, one can use -n and -r options:
 
-    ./http_client -H www.litespeedtech.com -s 443 \
+    ./quic_perf -H www.litespeedtech.com -s 443 \
                 -p /cgi-bin/crc32.cgi -P file-256M -M POST -n 3 -r 10
 
 This will open three parallel connections which will make ten POST
@@ -56,9 +56,9 @@ requests together.
 To perform load testing, it is good to mix sending and receiving data:
 
     for i in {1..100}; do
-        ./http_client $COMMON_OPTS -p /cgi-bin/crc32.cgi -P file-256M \
+        ./quic_perf $COMMON_OPTS -p /cgi-bin/crc32.cgi -P file-256M \
                                                     -M POST >out-post.$i &
-        ./http_client $COMMON_OPTS -p /docs/file-256M >out-get.$i        &
+        ./quic_perf $COMMON_OPTS -p /docs/file-256M >out-get.$i        &
         sleep 1
     done
 

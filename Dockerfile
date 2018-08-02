@@ -29,4 +29,4 @@ RUN cd /src/lsquic-client && \
           -DBORINGSSL_LIB=/usr/local/lib . && \
     make
 
-RUN cd lsquic-client && make test && cp http_client /usr/bin/
+RUN cd lsquic-client && make test && cp quic_perf /usr/bin/
